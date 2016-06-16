@@ -215,14 +215,7 @@ void movebot()
   Serial.println("DELAY STARTED");
   delay(500);
   Serial.println("DELAY STOPPED");
-  /*analogWrite(enable_r,0);
-  analogWrite(enable_l,0);
-  delay(500);
-  turn_left(reading());
-  analogWrite(enable_r,0);
-  analogWrite(enable_l,0);
-  delay(500);
-  */
+  
   
 }
 void turn_rightabout()
@@ -234,7 +227,7 @@ void turn_rightabout()
     Serial.print(temp_dump1);
     Serial.println(" Dummy reading");
   }  
-  turn_right(reading(),80);
+  turn_right(reading(),70);
   
   Serial.println("exit");
 
@@ -249,10 +242,10 @@ void turn_rightabout()
     Serial.print(temp_dump2);
     Serial.println(" Dummy reading");
   }
-  turn_right(reading(),80);
+  turn_right(reading(),70);
   Serial.println("exit");
   
-  //movebot();
+  
   return;
 }
 void turn_leftabout()
@@ -264,7 +257,7 @@ void turn_leftabout()
     Serial.print(temp_dump1);
     Serial.println(" Dummy reading");
   }  
-  turn_left(reading(),70);
+  turn_left(reading(),65);
   
   Serial.println("exit");
     
@@ -277,10 +270,10 @@ void turn_leftabout()
     Serial.print(temp_dump2);
     Serial.println(" Dummy reading");
   }
-  turn_left(reading(),70);
+  turn_left(reading(),65);
   Serial.println("exit");
   
-  //movebot();
+  
   return;
 }
 
@@ -385,7 +378,7 @@ void algorithm(){
       digitalWrite(motor_r2,HIGH);
       digitalWrite(motor_l1,HIGH);
       digitalWrite(motor_l2,LOW);
-      delay(50);//move forward for 50ms to avoid excessive load
+      //  delay(50);//move forward for 50ms to avoid excessive load
     }
     else{
       if(us_reading(echo_r,trig_r)>=turnradius && us_reading(echo_l,trig_l)<=turnradius){
@@ -447,10 +440,11 @@ void loop() {
      
   }
 
-  long us = us_reading(echo1,trig1);
-  if(turn%20 == 0){
+  //long us = us_reading(echo1,trig1);
+  if(turn%10 == 0){
       setup();  
       algorithm();
+      if (turn%10 == 0) turn = 1;
   }else{
       algorithm();      
   }
