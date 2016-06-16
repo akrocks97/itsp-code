@@ -379,7 +379,7 @@ void loop() {
   }
 
   long us = us_reading(echo1,trig1);
-  if(turn%20 == 0){
+  if(turn%10 == 0){
       setup();  
   
       if(us > 20){
