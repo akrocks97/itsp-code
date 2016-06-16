@@ -23,7 +23,9 @@ const int enable_r=3;
 const int enable_l=5; 
 #define echo1 A0
 #define echo_r A1
+#define echo2 A2
 const int trig1 = 4;
+const int trig2 = 13;
 const int trig_r = 6;
 const int echo_l = 7;
 const int trig_l = 8;
@@ -242,7 +244,7 @@ void turn_rightabout()
     Serial.print(temp_dump2);
     Serial.println(" Dummy reading");
   }
-  turn_right(reading(),70);
+  turn_right(reading(),60);
   Serial.println("exit");
   
   
@@ -257,7 +259,7 @@ void turn_leftabout()
     Serial.print(temp_dump1);
     Serial.println(" Dummy reading");
   }  
-  turn_left(reading(),65);
+  turn_left(reading(),70);
   
   Serial.println("exit");
     
@@ -270,7 +272,7 @@ void turn_leftabout()
     Serial.print(temp_dump2);
     Serial.println(" Dummy reading");
   }
-  turn_left(reading(),65);
+  turn_left(reading(),60);
   Serial.println("exit");
   
   
@@ -370,7 +372,7 @@ void setup() {
 
 
 void algorithm(){
-  if(us_reading(echo1, trig1)>=front_distance){
+  if((us_reading(echo1, trig1)>=front_distance) || (us_reading(echo2, trig2)>=front_distance)){
       //Move Forward
       digitalWrite(enable_r, HIGH);
       digitalWrite(enable_l, HIGH);
@@ -440,7 +442,7 @@ void loop() {
      
   }
 
-  //long us = us_reading(echo1,trig1);
+  long us = us_reading(echo1,trig1);
   if(turn%10 == 0){
       setup();  
       algorithm();
