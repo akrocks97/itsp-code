@@ -294,7 +294,7 @@ void setup() {
   // put your setup code here, to run once:
   #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
         Wire.begin();
-        TWBR = 12; // 400kHz I2C clock (200kHz if CPU is 8MHz)
+        TWBR = 24; // 400kHz I2C clock (200kHz if CPU is 8MHz)
     #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
         Fastwire::setup(400, true);
     #endif
@@ -373,7 +373,12 @@ void setup() {
 
 
 void algorithm(){
-  if((us_reading(echo1, trig1)>=front_distance) || (us_reading(echo2, trig2)>=front_distance) || (us_reading(echo3, trig3)>=front_distance)){
+  long usf1 = us_reading(echo1, trig1);
+  long usf2 = us_reading(echo2, trig2);
+  long usr = us_reading(echo_r,trig_r);
+  long usl = us_reading(echo_l,trig_l);
+  Serial.println(usr);
+  if((usf1>=front_distance) && (usf2>=front_distance) ){
       //Move Forward
       digitalWrite(enable_r, HIGH);
       digitalWrite(enable_r, HIGH);
@@ -383,8 +388,8 @@ void algorithm(){
       digitalWrite(motor_l2,LOW);
       //  delay(50);//move forward for 50ms to avoid excessive load
     }
-    else if((us_reading(echo1, trig1)>=front_distance) || (us_reading(echo2, trig2)>=front_distance)){
-      if(us_reading(echo_r,trig_r)>=turnradius && us_reading(echo_l,trig_l)<=turnradius){
+    else if((usf1<=front_distance) || (usf2<=front_distance)){
+      if(usr>=turnradius && usl<=turnradius){
         //Turn Right 
         //take mpu read and pass to turn
         turn_rightabout();
@@ -393,7 +398,7 @@ void algorithm(){
         rightturn=true;
         leftturn=false;      
       }
-      else if(us_reading(echo_r,trig_r)<=turnradius && us_reading(echo_l,trig_l)>=turnradius){
+      else if(usr<=turnradius && usl>=turnradius){
         //Turn left
         //take mpu read and pass to turn
         turn_leftabout();
@@ -402,12 +407,12 @@ void algorithm(){
         rightturn=false;
         leftturn=true;     
       }
-      else if(us_reading(echo_r,trig_r)<=turnradius && us_reading(echo_l,trig_l)<=turnradius){
+      else if(usr<=turnradius && usl<=turnradius){
         //Stop the bot by making both the enable pins low
         analogWrite(enable_r, 0);
         analogWrite(enable_r, 0);
       }
-      else if(us_reading(echo_r,trig_r)>=turnradius && us_reading(echo_l,trig_l)>=turnradius){
+      else if(usr>=turnradius && usl>=turnradius){
         //Turn according to feedback!!!
         if(leftturn && !rightturn){
           //Take right about turn
@@ -427,7 +432,7 @@ void algorithm(){
         }
       }
     }
-    else if ((us_reading(echo1, trig1)>=front_distance) && (us_reading(echo2, trig2)>=front_distance) && (us_reading(echo3, trig3)>=front_distance)){
+    /*else if ((usf1>=front_distance) && (usf2>=front_distance) && (us_reading(echo3, trig3)>=front_distance)){
       //move backwards
       digitalWrite(enable_r, HIGH);
       digitalWrite(enable_r, HIGH);
@@ -451,9 +456,10 @@ void algorithm(){
           turn++;
           rightturn=false;
           leftturn=true; 
-        }
+        }*/
       
-    }
+
+    
 }
 
 void loop() {
@@ -470,8 +476,8 @@ void loop() {
      
   }
 
-  long us = us_reading(echo1,trig1);
-  if(turn%10 == 0){
+  //long us = us_reading(echo1,trig1);
+  if(turn%15 == 0){
       setup();  
       algorithm();
       if (turn%10 == 0) turn = 1;
