@@ -480,7 +480,7 @@ void loop() {
   if(turn%15 == 0){
       setup();  
       algorithm();
-      if (turn%10 == 0) turn = 1;
+      if (turn%15 == 0) turn = 1;
   }else{
       algorithm();      
   }
