@@ -20,12 +20,13 @@ uint8_t fifoBuffer[64]; // FIFO storage buffer
 int runno = 1;
 //my vars
 const int enable_r=3;
-const int enable_l=5; 
-#define echo1 A0
+#define echo3 A3 //front forward
+#define echo1 A0 // front left
 #define echo_r A1
-#define echo2 A2
-const int trig1 = 4;
-const int trig2 = 13;
+#define echo2 A2 // front right
+const int trig1 = 4; //front left
+const int trig2 = 13; //front right
+const int trig3 = 5; // front forward
 const int trig_r = 6;
 const int echo_l = 7;
 const int trig_l = 8;
@@ -120,7 +121,7 @@ void turn_right(float read_start,int degree){
     if(read_start <(180 - degree) ){ //read_start <110
       while(abs(read_final - read_start)<=degree){
           analogWrite(enable_r, 255);
-          analogWrite(enable_l, 255);
+          analogWrite(enable_r, 255);
           digitalWrite(motor_r1,HIGH);
           digitalWrite(motor_r2,LOW);
           digitalWrite(motor_l1,HIGH);
@@ -138,7 +139,7 @@ void turn_right(float read_start,int degree){
         if(read_final >(180 - degree)){
           Serial.println(read_final);
           analogWrite(enable_r, 255);
-          analogWrite(enable_l, 255);
+          analogWrite(enable_r, 255);
           digitalWrite(motor_r1,HIGH);
           digitalWrite(motor_r2,LOW);
           digitalWrite(motor_l1,HIGH);
@@ -146,7 +147,7 @@ void turn_right(float read_start,int degree){
         }
         else if((angle1 + abs(180 - abs(read_final)))<degree){
           analogWrite(enable_r, 255);
-          analogWrite(enable_l, 255);
+          analogWrite(enable_r, 255);
           digitalWrite(motor_r1,HIGH);
           digitalWrite(motor_r2,LOW);
           digitalWrite(motor_l1,HIGH);
@@ -159,7 +160,7 @@ void turn_right(float read_start,int degree){
             
     }
     analogWrite(enable_r, 0);
-    analogWrite(enable_l, 0);
+    analogWrite(enable_r, 0);
     
     
 }
@@ -168,7 +169,7 @@ void turn_left(float read_start,int degree){
     if(read_start >(degree - 180)){
       while(abs(read_start - read_final) < degree ){
        analogWrite(enable_r, 255);
-       analogWrite(enable_l, 255);
+       analogWrite(enable_r, 255);
        digitalWrite(motor_r1,LOW);
        digitalWrite(motor_r2,HIGH);
        digitalWrite(motor_l1,LOW);
@@ -185,7 +186,7 @@ void turn_left(float read_start,int degree){
         if(read_final < (degree - 180)){
           Serial.println(read_final);
           analogWrite(enable_r, 255);
-          analogWrite(enable_l, 255);
+          analogWrite(enable_r, 255);
           digitalWrite(motor_r1,LOW);
           digitalWrite(motor_r2,HIGH);
           digitalWrite(motor_l1,LOW);
@@ -194,7 +195,7 @@ void turn_left(float read_start,int degree){
         else if((angle1 + abs(180.0- abs(read_final)))<(degree)){
           Serial.println(read_final);
        analogWrite(enable_r, 255);
-       analogWrite(enable_l, 255);
+       analogWrite(enable_r, 255);
        digitalWrite(motor_r1,LOW);
        digitalWrite(motor_r2,HIGH);
        digitalWrite(motor_l1,LOW);
@@ -209,7 +210,7 @@ void turn_left(float read_start,int degree){
 void movebot()
 { 
   analogWrite(enable_r, 255);
-  analogWrite(enable_l, 255); 
+  analogWrite(enable_r, 255); 
   digitalWrite(motor_r1,LOW);
   digitalWrite(motor_r2,HIGH);
   digitalWrite(motor_l1,HIGH);
@@ -362,7 +363,7 @@ void setup() {
   pinMode(trig_r,OUTPUT);
   pinMode(trig_l,OUTPUT);
   pinMode(enable_r,OUTPUT);
-  pinMode(enable_l,OUTPUT);
+  pinMode(enable_r,OUTPUT);
   pinMode(motor_r1,OUTPUT);
   pinMode(motor_r2,OUTPUT);
   pinMode(motor_l1,OUTPUT);
@@ -372,17 +373,17 @@ void setup() {
 
 
 void algorithm(){
-  if((us_reading(echo1, trig1)>=front_distance) || (us_reading(echo2, trig2)>=front_distance)){
+  if((us_reading(echo1, trig1)>=front_distance) || (us_reading(echo2, trig2)>=front_distance) || (us_reading(echo3, trig3)>=front_distance)){
       //Move Forward
       digitalWrite(enable_r, HIGH);
-      digitalWrite(enable_l, HIGH);
+      digitalWrite(enable_r, HIGH);
       digitalWrite(motor_r1,LOW);
       digitalWrite(motor_r2,HIGH);
       digitalWrite(motor_l1,HIGH);
       digitalWrite(motor_l2,LOW);
       //  delay(50);//move forward for 50ms to avoid excessive load
     }
-    else{
+    else if((us_reading(echo1, trig1)>=front_distance) || (us_reading(echo2, trig2)>=front_distance)){
       if(us_reading(echo_r,trig_r)>=turnradius && us_reading(echo_l,trig_l)<=turnradius){
         //Turn Right 
         //take mpu read and pass to turn
@@ -404,7 +405,7 @@ void algorithm(){
       else if(us_reading(echo_r,trig_r)<=turnradius && us_reading(echo_l,trig_l)<=turnradius){
         //Stop the bot by making both the enable pins low
         analogWrite(enable_r, 0);
-        analogWrite(enable_l, 0);
+        analogWrite(enable_r, 0);
       }
       else if(us_reading(echo_r,trig_r)>=turnradius && us_reading(echo_l,trig_l)>=turnradius){
         //Turn according to feedback!!!
@@ -425,6 +426,33 @@ void algorithm(){
           leftturn=true; 
         }
       }
+    }
+    else if ((us_reading(echo1, trig1)>=front_distance) && (us_reading(echo2, trig2)>=front_distance) && (us_reading(echo3, trig3)>=front_distance)){
+      //move backwards
+      digitalWrite(enable_r, HIGH);
+      digitalWrite(enable_r, HIGH);
+      digitalWrite(motor_r1,HIGH);
+      digitalWrite(motor_r2,LOW);
+      digitalWrite(motor_l1,LOW);
+      digitalWrite(motor_l2,HIGH);
+      delay(1000);
+      if(leftturn && !rightturn){
+          //Take right about turn
+          //take mpu read and pass to turn
+          turn_rightabout();
+          turn++;
+          rightturn=true;
+          leftturn=false; 
+          
+        }else{
+          //Take left about turn
+          //take mpu read and pass to turn
+          turn_leftabout();
+          turn++;
+          rightturn=false;
+          leftturn=true; 
+        }
+      
     }
 }
 
