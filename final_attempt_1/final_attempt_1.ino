@@ -230,7 +230,7 @@ void turn_rightabout()
     Serial.print(temp_dump1);
     Serial.println(" Dummy reading");
   }  
-  turn_right(reading(),70);
+  turn_right(reading(),90);
   
   Serial.println("exit");
 
@@ -245,7 +245,7 @@ void turn_rightabout()
     Serial.print(temp_dump2);
     Serial.println(" Dummy reading");
   }
-  turn_right(reading(),60);
+  turn_right(reading(),80);
   Serial.println("exit");
   
   
@@ -260,7 +260,7 @@ void turn_leftabout()
     Serial.print(temp_dump1);
     Serial.println(" Dummy reading");
   }  
-  turn_left(reading(),70);
+  turn_left(reading(),90);
   
   Serial.println("exit");
     
@@ -273,7 +273,7 @@ void turn_leftabout()
     Serial.print(temp_dump2);
     Serial.println(" Dummy reading");
   }
-  turn_left(reading(),60);
+  turn_left(reading(),80);
   Serial.println("exit");
   
   
@@ -359,7 +359,9 @@ void setup() {
   pinMode(echo1,INPUT);
   pinMode(echo_r,INPUT);
   pinMode(echo_l,INPUT);
+  pinMode(echo2,INPUT);
   pinMode(trig1,OUTPUT);
+  pinMode(trig2,OUTPUT);
   pinMode(trig_r,OUTPUT);
   pinMode(trig_l,OUTPUT);
   pinMode(enable_r,OUTPUT);
