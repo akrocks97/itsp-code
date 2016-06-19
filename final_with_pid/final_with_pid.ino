@@ -1,3 +1,11 @@
+/*
+ PID  // Here i am only using proportional part
+Error is 90 initially i.e. degree required to turn, so error = degree
+Motor initial speed 255 and base speed 165 i.e. 255-90 therefore kp = 1
+after error is decreased by 5 degree motor speed falls by 5 degree
+Now let's implement it
+
+*/
 #include "I2Cdev.h"
 
 #include "MPU6050_6Axis_MotionApps20.h"
@@ -38,6 +46,9 @@ const int front_distance = 20;
 const int turnradius = 40;
 bool rightturn =false, leftturn = false;
 int turn = 1;
+//pid vars
+int error;
+int motorbase = 165;
 
 // orientation/motion vars
 Quaternion q;           // [w, x, y, z]         quaternion container
@@ -118,14 +129,18 @@ long us_reading(int echo_pin, int trig_pin){
 
 void turn_right(float read_start,int degree,int voltage){
     float read_final = read_start;
+    error = degree;
     if(read_start <(180 - degree) ){ //read_start <110
       while(abs(read_final - read_start)<=degree){
+          voltage = motorbase + (error);
+          error = degree - (int)abs(read_final - read_start);
           analogWrite(enable_r, voltage);
           analogWrite(enable_r, voltage);
           digitalWrite(motor_r1,HIGH);
           digitalWrite(motor_r2,LOW);
           digitalWrite(motor_l1,HIGH);
           digitalWrite(motor_l2,LOW);
+          //if(error % 5 == 0) voltage -= 5;
           read_final=reading();
           Serial.println(read_final);
      }
@@ -137,6 +152,8 @@ void turn_right(float read_start,int degree,int voltage){
       float angle1 = abs(180- read_start);
       while(true){
         if(read_final >(180 - degree)){
+          voltage = motorbase + error;
+          error = degree - (int)(read_final - read_start);
           Serial.println(read_final);
           analogWrite(enable_r, voltage);
           analogWrite(enable_r, voltage);
@@ -144,8 +161,11 @@ void turn_right(float read_start,int degree,int voltage){
           digitalWrite(motor_r2,LOW);
           digitalWrite(motor_l1,HIGH);
           digitalWrite(motor_l2,LOW);
+          //if(error % 5 == 0) voltage -=5;
         }
         else if((angle1 + abs(180 - abs(read_final)))<degree){
+          voltage = motorbase + error;
+          error = degree - (int)(angle1 + abs(180 - abs(read_final)));
           analogWrite(enable_r, voltage);
           analogWrite(enable_r, voltage);
           digitalWrite(motor_r1,HIGH);
@@ -230,8 +250,8 @@ void turn_rightabout()
     Serial.print(temp_dump1);
     Serial.println(" Dummy reading");
   }  
-  turn_right(reading(),50,255);
-  turn_right(reading(),25,170);
+  turn_right(reading(),85,255);
+  //turn_right(reading(),25,170);
   
   Serial.println("exit");
 
@@ -246,8 +266,8 @@ void turn_rightabout()
     Serial.print(temp_dump2);
     Serial.println(" Dummy reading");
   }
-  turn_right(reading(),50,255);
-  turn_right(reading(),25,170);
+  turn_right(reading(),85,255);
+  //turn_right(reading(),25,170);
   Serial.println("exit");
   
   
@@ -262,8 +282,8 @@ void turn_leftabout()
     Serial.print(temp_dump1);
     Serial.println(" Dummy reading");
   }  
-  turn_left(reading(),50,255);
-  turn_left(reading(),25,170);
+  turn_left(reading(),90,255);
+  //turn_left(reading(),25,170);
   
   Serial.println("exit");
     
@@ -276,8 +296,8 @@ void turn_leftabout()
     Serial.print(temp_dump2);
     Serial.println(" Dummy reading");
   }
-  turn_left(reading(),50,255);
-  turn_left(reading(),25,170);
+  turn_left(reading(),90,255);
+  //turn_left(reading(),25,170);
   Serial.println("exit");
   
   
