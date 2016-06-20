@@ -35,7 +35,7 @@ const int motor_r2 = 10;//black
 const int motor_l1 = 11;//red
 const int motor_l2 = 12;//black
 const int front_distance = 20;
-const int turnradius = 40;
+const int turnradius = 20;
 bool rightturn =false, leftturn = false;
 int turn = 1;
 
@@ -209,8 +209,8 @@ void turn_left(float read_start,int degree,int voltage){
 }
 void movebot()
 { 
-  analogWrite(enable_r, 255);
-  analogWrite(enable_r, 255); 
+  analogWrite(enable_r, 240);
+  analogWrite(enable_r, 240); 
   digitalWrite(motor_r1,LOW);
   digitalWrite(motor_r2,HIGH);
   digitalWrite(motor_l1,HIGH);
@@ -230,7 +230,7 @@ void turn_rightabout()
     Serial.print(temp_dump1);
     Serial.println(" Dummy reading");
   }  
-  turn_right(reading(),50,255);
+  turn_right(reading(),50,220);
   turn_right(reading(),25,170);
   
   Serial.println("exit");
@@ -246,7 +246,7 @@ void turn_rightabout()
     Serial.print(temp_dump2);
     Serial.println(" Dummy reading");
   }
-  turn_right(reading(),50,255);
+  turn_right(reading(),50,220);
   turn_right(reading(),25,170);
   Serial.println("exit");
   
@@ -262,7 +262,7 @@ void turn_leftabout()
     Serial.print(temp_dump1);
     Serial.println(" Dummy reading");
   }  
-  turn_left(reading(),50,255);
+  turn_left(reading(),50,220);
   turn_left(reading(),25,170);
   
   Serial.println("exit");
@@ -276,7 +276,7 @@ void turn_leftabout()
     Serial.print(temp_dump2);
     Serial.println(" Dummy reading");
   }
-  turn_left(reading(),50,255);
+  turn_left(reading(),50,220);
   turn_left(reading(),25,170);
   Serial.println("exit");
   
