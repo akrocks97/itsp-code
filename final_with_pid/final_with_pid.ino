@@ -186,8 +186,11 @@ void turn_right(float read_start,int degree,int voltage){
 }
 void turn_left(float read_start,int degree,int voltage){
     float read_final = read_start;
+    int error = degree;
     if(read_start >(degree - 180)){
       while(abs(read_start - read_final) < degree ){
+       voltage = motorbase + error;
+       error = abs(read_start - read_final);
        analogWrite(enable_r, voltage);
        analogWrite(enable_r, voltage);
        digitalWrite(motor_r1,LOW);
@@ -203,7 +206,9 @@ void turn_left(float read_start,int degree,int voltage){
       read_final = read_start;
       float angle1 = abs(180.0- abs(read_start));
       while(true){
+        voltage = motorbase + error;
         if(read_final < (degree - 180)){
+          error = degree - (180 - abs(read_final));
           Serial.println(read_final);
           analogWrite(enable_r, voltage);
           analogWrite(enable_r, voltage);
@@ -213,13 +218,14 @@ void turn_left(float read_start,int degree,int voltage){
           digitalWrite(motor_l2,HIGH);
         }
         else if((angle1 + abs(180.0- abs(read_final)))<(degree)){
+          error = degree - (int)((angle1 + abs(180.0- abs(read_final))));
           Serial.println(read_final);
-       analogWrite(enable_r, voltage);
-       analogWrite(enable_r, voltage);
-       digitalWrite(motor_r1,LOW);
-       digitalWrite(motor_r2,HIGH);
-       digitalWrite(motor_l1,LOW);
-       digitalWrite(motor_l2,HIGH);
+          analogWrite(enable_r, voltage);
+          analogWrite(enable_r, voltage);
+          digitalWrite(motor_r1,LOW);
+          digitalWrite(motor_r2,HIGH);
+          digitalWrite(motor_l1,LOW);
+          digitalWrite(motor_l2,HIGH);
         }
         else break;
         read_final = reading();
